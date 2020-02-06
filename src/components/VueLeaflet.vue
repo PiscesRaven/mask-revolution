@@ -1,42 +1,83 @@
 <template>
   <div class="vue-leaflet">
     <div class="map">
-      <l-map :zoom="zoom" :center="center" ref="myMap">
-        <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
-        <l-marker :lat-lng="center" :icon="icon" ref='marker'></l-marker>
+      <l-map
+        :zoom="zoom"
+        :center="center"
+        ref="myMap">
+        <l-tile-layer
+          :url="url"
+          :attribution="attribution">
+        </l-tile-layer>
+        <l-marker
+          :lat-lng="center"
+          :icon="icon"
+          ref='marker'>
+        </l-marker>
         <v-marker-cluster>
-          <l-marker v-for="stores in Tw_Stores" :key="stores.id" :lat-lng="getCoods(stores.x, stores.y)" >
-            <l-popup :content="getPopup(stores)"></l-popup>
+          <l-marker
+          v-for="stores in filterPharmacy"
+          :key="stores.id"
+          :lat-lng="getCoods(stores.geometry.coordinates[0], stores.geometry.coordinates[1])">
+            <l-popup :content="getPopup(stores.properties)"></l-popup>
           </l-marker>
         </v-marker-cluster>
       </l-map>
     </div>
     <div class="map-note">
       <div class="select_container">
-        <div class="select">
-
-        </div>
-        <div class="select">
-        </div>
+        <select
+          class="select"
+          v-model="city"
+          @change="area = null">
+          <option :value="null">請選擇</option>
+          <option
+            v-for="item in cityList"
+            :value="item"
+            :key="item.id">
+            {{ item }}
+          </option>
+        </select>
+        <select
+          class="select"
+          v-model="area">
+          <option :value="null">請選擇</option>
+          <template v-if="!!city">
+            <option v-for="item in areaList"
+              :value="item"
+              :key="item.id">
+              {{item}}
+            </option>
+          </template>
+        </select>
         <p>有取得口罩數量的藥局有 <span class="hi_light">24</span> 家</p>
       </div>
       <div class="list_container">
-        <div class="pharmacy_list">
-          <div class="pharmacy" v-for="i in 10" :key="i">
-            <h2 class="name">禾豐藥局</h2>
+        <div class="pharmacy_list"
+          v-if="filterPharmacy.length">
+          <div class="pharmacy"
+            v-for="pharmacy in filterPharmacy"
+            :key="pharmacy.properties.id">
+            <h2 class="name">{{ pharmacy.properties.name }}</h2>
             <p class="address">
               <span class="img">
                 <img src="@img/map-marker.png">
               </span>
-               台中市太平區樹孝路31號</p>
+               {{ pharmacy.properties.address }}</p>
             <p class="tel">
               <span class="img">
                 <img src="@img/phone.png">
               </span>
-              04 -23915599</p>
+              {{ pharmacy.properties.phone }}</p>
             <div class="status_container">
-              <span class="mask_status">成人 :</span>
-              <span class="mask_status selled">兒童 : </span>
+              <span class="mask_status"
+              :class="pharmacy.properties.mask_adult === 0 ? 'selled':''">
+                成人 : {{ pharmacy.properties.mask_adult }}
+              </span>
+              <span class="mask_status"
+              :class="pharmacy.properties.mask_child === 0 ? 'selled':''">
+                兒童 : {{ pharmacy.properties.mask_child }}
+              </span>
             </div>
           </div>
         </div>
@@ -47,6 +88,8 @@
 
 <script>
 import Vue2LeafletMarkerCluster from 'vue2-leaflet-markercluster'
+
+import TwCity from '@/json/city_list'
 
 import {
   LMap,
@@ -69,6 +112,8 @@ export default {
   data () {
     return {
       Tw_Stores: [],
+      city: null, // 城市
+      area: null, // 地區
       zoom: 5,
       center: L.latLng(24.163721, 120.63542),
       marker: L.latLng(24.163721, 120.63542),
@@ -98,22 +143,22 @@ export default {
         <h3 class="store-title">${item.name}</h3>
         <div class="store-info">
           <a target="_blank" href="https://www.google.com.tw/maps/place/${addr}">地址: ${addr}</a><br>
-          電話: ${item.tel}
+          電話: ${item.phone}
         </div>
       `
     },
     renderMap () {
       this.zoom = 17
-      fetch('./med-stores.json')
-        .then(res => res.json())
-        .then(jsonData => {
-          this.Tw_Stores = jsonData
-        })
+      // fetch('./med-stores.json')
+      //   .then(res => res.json())
+      //   .then(jsonData => {
+      //     this.Tw_Stores = jsonData
+      //   })
 
       fetch('https://raw.githubusercontent.com/kiang/pharmacies/master/json/points.json?fbclid=IwAR2faivZHghmapjOcGiuSocqD09wboudZpWjQIfxwG9xCutufqr7Bw06yVk')
         .then(res => res.json())
         .then(jsonData => {
-          console.log('jsonData', jsonData)
+          this.Tw_Stores = jsonData.features
         })
     },
     initLoccl () {
@@ -139,9 +184,35 @@ export default {
     geo_success (position) {
     }
   },
+  computed: {
+    cityList () {
+      let res = TwCity.taiwan.map((tw) => tw.city)
+      return res
+    },
+    areaList () {
+      let res = []
+      let city = !!this.city
+      if (city) {
+        res = TwCity.taiwan.filter((tw) => tw.city === this.city)[0].area.map(areas => areas.text)
+      }
+      return res
+    },
+    filterPharmacy () {
+      let res = []
+      let city = this.city
+      let area = this.area
+      if (!!city && !!area) {
+        res = this.Tw_Stores.filter((features) => {
+          let regExp = new RegExp(city + area, 'g')
+          return features.properties.address.match(regExp)
+        })
+      }
+      return res
+    }
+  },
   mounted () {
     this.renderMap()
-    this.initLoccl()
+    // this.initLoccl()
   }
 }
 </script>
@@ -192,6 +263,7 @@ export default {
     height: 48px;
     border: 1px solid #D8D8D8;
     margin-bottom: 8px;
+    padding: 0 16px;
     &:last-of-type{
       margin-bottom: 12px;
     }
