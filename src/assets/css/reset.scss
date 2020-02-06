@@ -3,6 +3,10 @@
    License: none (public domain)
 */
 
+@import url('https://fonts.googleapis.com/css?family=Montserrat&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans+TC&display=swap');
+
+
 html,
 body,
 div,
@@ -90,6 +94,7 @@ video {
   font-size: 100%;
   font: inherit;
   vertical-align: baseline;
+  font-family: 'Noto Sans TC', 'montserrat', 'Microsoft JhengHei', 'Arial Black', 'LiHei Pro';
 }
 
 /* HTML5 display-role reset for older browsers */
@@ -108,6 +113,10 @@ section {
   display: block;
 }
 
+
+* {
+  box-sizing: border-box;
+}
 body {
   line-height: 1;
 }
