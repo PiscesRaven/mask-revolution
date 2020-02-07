@@ -124,7 +124,7 @@ export default {
       }),
       text: 'this is a marker',
       token: '',
-      url: 'https://api.tiles.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw',
+      url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw',
       attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>'
     }
   },
@@ -188,7 +188,9 @@ export default {
     moveTo (geometry) {
       let [ x, y ] = geometry.coordinates
       L.latLng(x, y)
+      this.zoom = 22
       this.center = L.latLng(y, x)
+      // this.$refs.clusterRef.
     }
   },
   computed: {
@@ -266,6 +268,12 @@ export default {
   height: 100%;
   left: 25%;
   z-index: 5;
+  @media (max-width: 1024px) {
+    width: 100%;
+    height: 50%;
+    top: 0;
+    left: 0;
+  }
 }
 
 .map-note{
@@ -276,6 +284,13 @@ export default {
   left: 0%;
   z-index: 1;
   max-width: 480px;
+   @media (max-width: 1024px) {
+    width: 100%;
+    height: 50%;
+    top: 50%;
+    left: 0;
+    max-width: unset;
+  }
 }
 .select_container{
   padding: 32px 20px 0 20px;
@@ -287,6 +302,9 @@ export default {
     padding: 0 16px;
     &:last-of-type{
       margin-bottom: 12px;
+    }
+    @media (max-width: 1024px) {
+    height: 24px;
     }
   }
   > p {
@@ -306,6 +324,9 @@ export default {
   /* margin-right: -17px; */
   height: calc(100% - 188px);
   overflow-y: auto;
+  @media (max-width: 1024px) {
+    height: calc(100% - 136px);
+  }
   .pharmacy{
     cursor: pointer;
     background-color: #fff;
@@ -343,7 +364,7 @@ export default {
         letter-spacing: 0;
         color: #FFFFFF;
         font-size: 20px;
-        padding: 12px 15px;
+        line-height: 44px;
         font-size: 16px;
         &:last-of-type{
           margin-left: 2px;
