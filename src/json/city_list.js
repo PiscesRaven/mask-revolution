@@ -1,7 +1,7 @@
 module.exports = {
   taiwan: [
     {
-      city: '臺北市',
+      city: '台北市',
       area: [
         {
           zip: '100',
@@ -465,7 +465,7 @@ module.exports = {
       ]
     },
     {
-      city: '臺中市',
+      city: '台中市',
       area: [
         {
           zip: '400',
@@ -927,7 +927,7 @@ module.exports = {
       ]
     },
     {
-      city: '臺南市',
+      city: '台南市',
       area: [
         {
           zip: '700',
@@ -1404,7 +1404,7 @@ module.exports = {
       ]
     },
     {
-      city: '臺東縣',
+      city: '台東縣',
       area: [
         {
           zip: '950',
