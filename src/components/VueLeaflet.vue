@@ -10,15 +10,15 @@
           :attribution="attribution">
         </l-tile-layer>
         <l-marker
-          :lat-lng="center"
+          :lat-lng="marker"
           :icon="icon"
           ref='marker'>
         </l-marker>
-        <v-marker-cluster>
+        <v-marker-cluster ref="clusterRef">
           <l-marker
-          v-for="stores in filterPharmacy"
-          :key="stores.id"
-          :lat-lng="getCoods(stores.geometry.coordinates[0], stores.geometry.coordinates[1])">
+            v-for="stores in filterPharmacy"
+            :key="stores.id"
+            :lat-lng="getCoods(stores.geometry.coordinates[0], stores.geometry.coordinates[1])">
             <l-popup :content="getPopup(stores.properties)"></l-popup>
           </l-marker>
         </v-marker-cluster>
@@ -50,14 +50,15 @@
             </option>
           </template>
         </select>
-        <p>有取得口罩數量的藥局有 <span class="hi_light">24</span> 家</p>
+        <p>有取得口罩數量的藥局有 <span class="hi_light"> {{ areaMaskNum }} </span> 家</p>
       </div>
       <div class="list_container">
         <div class="pharmacy_list"
           v-if="filterPharmacy.length">
           <div class="pharmacy"
             v-for="pharmacy in filterPharmacy"
-            :key="pharmacy.properties.id">
+            :key="pharmacy.properties.id"
+            @click="moveTo(pharmacy.geometry)">
             <h2 class="name">{{ pharmacy.properties.name }}</h2>
             <p class="address">
               <span class="img">
@@ -72,11 +73,11 @@
             <div class="status_container">
               <span class="mask_status"
               :class="pharmacy.properties.mask_adult === 0 ? 'selled':''">
-                成人 : {{ pharmacy.properties.mask_adult }}
+                成人 : {{ pharmacy.properties.mask_adult }} 個
               </span>
               <span class="mask_status"
               :class="pharmacy.properties.mask_child === 0 ? 'selled':''">
-                兒童 : {{ pharmacy.properties.mask_child }}
+                兒童 : {{ pharmacy.properties.mask_child }} 個
               </span>
             </div>
           </div>
@@ -143,7 +144,8 @@ export default {
         <h3 class="store-title">${item.name}</h3>
         <div class="store-info">
           <a target="_blank" href="https://www.google.com.tw/maps/place/${addr}">地址: ${addr}</a><br>
-          電話: ${item.phone}
+          電話: ${item.phone}<br>
+          口罩數量: 成人口罩 : ${item.mask_adult} 個  兒童口罩 : ${item.mask_child} 個
         </div>
       `
     },
@@ -182,6 +184,11 @@ export default {
       }
     },
     geo_success (position) {
+    },
+    moveTo (geometry) {
+      let [ x, y ] = geometry.coordinates
+      L.latLng(x, y)
+      this.center = L.latLng(y, x)
     }
   },
   computed: {
@@ -201,12 +208,26 @@ export default {
       let res = []
       let city = this.city
       let area = this.area
+      let tw = /(台|臺)../
       if (!!city && !!area) {
+        if (city !== null && city.match(tw)) {
+          city = city.split('台').join('')
+        }
+        let regExp = new RegExp(city + area, 'g')
         res = this.Tw_Stores.filter((features) => {
-          let regExp = new RegExp(city + area, 'g')
           return features.properties.address.match(regExp)
         })
       }
+      return res
+    },
+    areaMaskNum () {
+      let filterPharmacy = this.filterPharmacy
+      let res = 0
+      filterPharmacy.map((pharmacy) => {
+        if (pharmacy.properties.mask_child || pharmacy.properties.mask_adult) {
+          res++
+        }
+      })
       return res
     }
   },
@@ -322,7 +343,7 @@ export default {
         letter-spacing: 0;
         color: #FFFFFF;
         font-size: 20px;
-        padding: 12px 26px;
+        padding: 12px 15px;
         font-size: 16px;
         &:last-of-type{
           margin-left: 2px;
