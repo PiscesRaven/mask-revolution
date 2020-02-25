@@ -24,7 +24,7 @@
         </v-marker-cluster>
       </l-map>
     </div>
-    <div class="map-note">
+    <!-- <div class="map-note">
       <div class="select_container">
         <select
           class="select"
@@ -83,7 +83,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 

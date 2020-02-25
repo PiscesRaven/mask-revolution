@@ -1,18 +1,18 @@
 <template>
   <div id="app">
     <!-- <h1 class="info">口罩供需資訊平台</h1> -->
-    <vue-leaflet />
+    <Main />
   </div>
 </template>
 
 <script>
 
-import VueLeaflet from './components/VueLeaflet.vue'
+import Main from './view/Main'
 
 export default {
   name: 'app',
   components: {
-    VueLeaflet
+    Main
   }
 }
 </script>
