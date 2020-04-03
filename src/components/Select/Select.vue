@@ -64,6 +64,7 @@ export default {
       handler (newValue) {
         this.option = this.selectText
         this.liList = newValue
+        this.$emit('update', '')
       }
     }
   }
