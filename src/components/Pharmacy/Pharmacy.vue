@@ -49,8 +49,6 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-@import "~leaflet.markercluster/dist/MarkerCluster.css";
-@import "~leaflet.markercluster/dist/MarkerCluster.Default.css";
 .fade-enter-active, .fade-leave-active {
   transition: opacity .25s;
 }
@@ -63,125 +61,58 @@ export default {
   width: 100%;
   height: 100%;
 }
-.map-info {
-  display: block;
-  padding: .75em 1.75em;
-  background-color: #fff;
-  border: 1px solid #000;
-  position: absolute;
-  z-index: 10;
-  top: 0;
-  right: 0;
-}
-.map{
-  display: block;
-  position: absolute;
-  width: 75%;
-  height: 100%;
-  left: 25%;
-  z-index: 5;
-  @media (max-width: 1024px) {
-    width: 100%;
-    height: 50%;
-    top: 0;
-    left: 0;
-  }
-}
 
-.map-note{
-  display: block;
-  position: absolute;
-  width: 25%;
-  height: 100%;
-  left: 0%;
-  z-index: 1;
-  max-width: 480px;
-   @media (max-width: 1024px) {
-    width: 100%;
-    height: 50%;
-    top: 50%;
-    left: 0;
-    max-width: unset;
-  }
-}
-.select_container{
-  position: relative;
-  padding: 16px;
-  box-shadow: 0px 2px 6px 1px rgba(0,0,0,.25);
-  > p {
-    height: 36px;
-    letter-spacing: 0;
-    color: #333333;
-    font-size: 16px;
-    &.transparent {
-      color: transparent;
-    }
-  }
-  .hi_light{
-    color: #668AFE;
-    font-size: 24px;
-  }
-}
-.list_container{
+.pharmacy{
+  cursor: pointer;
   background-color: #fff;
-  padding: 20px;
-  /* margin-right: -17px; */
-  height: calc(100% - 188px);
-  overflow-y: auto;
-  @media (max-width: 1024px) {
-    height: calc(100% - 136px);
+  margin-bottom: 16px;
+  border-radius: 10px;
+  box-shadow: 0px 2px 6px 1px rgba(0,0,0,.25);
+  overflow: hidden;
+  .pharmacy_content {
+    padding: 20px;
   }
-  .pharmacy{
-    cursor: pointer;
-    background-color: #fff;
-    margin-bottom: 16px;
-    border-radius: 10px;
-    box-shadow: 0px 2px 6px 1px rgba(0,0,0,.25);
-    overflow: hidden;
-    .pharmacy_content {
-      padding: 20px;
-    }
-    &:last-of-type{
-      margin-bottom: 0;
-    }
-    .name{
-      line-height: 26px;
-      font-size: 24px;
-      color: #0BA29C;
-      margin-bottom: 8px;
-    }
-    .address,.tel{
-      line-height: 24px;
-      color: #666666;
-    }
-    .tel {
-    }
-    .status_container{
-      .mask_status {
-        width: 50%;
-        height: 44px;
-        text-align: center;
-        display: inline-block;
-        font-weight: 200;
-        letter-spacing: 0;
-        color: #FFFFFF;
-        font-size: 20px;
-        line-height: 44px;
-        font-size: 16px;
-        &.ample {
-          background-color: #0BA29C;
-        }
-        &.common {
-          background-color: #FBB03B;
-        }
-        &.less {
-          background-color: #D4145A;
-        }
-        &.selled {
-          background-color: #00000080;
-        }
+  &:last-of-type{
+    margin-bottom: 0;
+  }
+  .name{
+    line-height: 26px;
+    font-size: 24px;
+    color: #0BA29C;
+    margin-bottom: 8px;
+  }
+  .address,.tel{
+    line-height: 24px;
+    color: #666666;
+  }
+  .tel {
+  }
+  .status_container{
+    .mask_status {
+      width: 50%;
+      height: 44px;
+      text-align: center;
+      display: inline-block;
+      font-weight: 200;
+      letter-spacing: 0;
+      color: #FFFFFF;
+      font-size: 20px;
+      line-height: 44px;
+      font-size: 16px;
+      &.ample {
+        background-color: #0BA29C;
+      }
+      &.common {
+        background-color: #FBB03B;
+      }
+      &.less {
+        background-color: #D4145A;
+      }
+      &.selled {
+        background-color: #00000080;
       }
     }
   }
 }
+
 </style>
