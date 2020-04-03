@@ -16,6 +16,9 @@ export default new Vuex.Store({
       let data = payload
       let tw = /(台|臺)../
       let res = []
+      if (!data) {
+        state.pharmacyList = res
+      }
       if (data.match(tw)) {
         data = data.split('台').join('')
       }
