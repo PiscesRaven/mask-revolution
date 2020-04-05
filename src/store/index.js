@@ -18,15 +18,16 @@ export default new Vuex.Store({
       let res = []
       if (!data) {
         state.pharmacyList = res
+      } else {
+        if (data.match(tw)) {
+          data = data.split('台').join('')
+        }
+        let regExp = new RegExp(data, 'g')
+        res = state.stroeList.filter((features) => {
+          return features.properties.address.match(regExp)
+        })
+        state.pharmacyList = res
       }
-      if (data.match(tw)) {
-        data = data.split('台').join('')
-      }
-      let regExp = new RegExp(data, 'g')
-      res = state.stroeList.filter((features) => {
-        return features.properties.address.match(regExp)
-      })
-      state.pharmacyList = res
     }
   },
   actions: {
