@@ -3,7 +3,8 @@
     <div class="pharmacy"
       v-for="pharmacy in statePharmacyList"
       :key="pharmacy.properties.id"
-      @click="moveTo(pharmacy.geometry)">
+      :class="pharmacy.properties.id === selectdId ? 'select' : ''"
+      @click="selected(pharmacy)">
       <div class="pharmacy_content">
         <h2 class="name">{{ pharmacy.properties.name }}</h2>
         <p class="tel">
@@ -25,10 +26,11 @@
   </transition-group>
 </template>
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   methods: {
+    ...mapActions(['getselectData']),
     maskAmount (item) {
       let classList = []
       if (item >= 250) {
@@ -41,14 +43,20 @@ export default {
         classList.push('selled')
       }
       return classList
+    },
+    selected (data) {
+      this.getselectData([data])
     }
   },
   computed: {
-    ...mapGetters(['statePharmacyList'])
+    ...mapGetters(['statePharmacyList', 'setselectData']),
+    selectdId () {
+      return this.setselectData[0].properties.id
+    }
   }
 }
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
 .fade-enter-active, .fade-leave-active {
   transition: opacity .25s;
 }
@@ -69,6 +77,10 @@ export default {
   border-radius: 10px;
   box-shadow: 0px 2px 6px 1px rgba(0,0,0,.25);
   overflow: hidden;
+  transition: .15s;
+  &.select {
+    box-shadow: 0px 0px 0px 2px rgba(0,0,0,.25);
+  }
   .pharmacy_content {
     padding: 20px;
   }
@@ -85,9 +97,7 @@ export default {
     line-height: 24px;
     color: #666666;
   }
-  .tel {
-  }
-  .status_container{
+  .status_container {
     .mask_status {
       width: 50%;
       height: 44px;
