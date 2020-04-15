@@ -18,6 +18,7 @@
       </div> -->
       <vue-leaflet />
     </div>
+    <div class="last_time">{{selectdPharmacy}}</div>
   </div>
 </template>
 <script>
@@ -41,7 +42,7 @@ export default {
     VueLeaflet
   },
   methods: {
-    ...mapActions(['getstroeList', 'getPharmacyList']),
+    ...mapActions(['getstroeList', 'getPharmacyList', 'getselectData']),
     init () {
       fetch('https://raw.githubusercontent.com/kiang/pharmacies/master/json/points.json?fbclid=IwAR2faivZHghmapjOcGiuSocqD09wboudZpWjQIfxwG9xCutufqr7Bw06yVk')
         .then(res => res.json())
@@ -51,7 +52,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['statePharmacyList']),
+    ...mapGetters(['statePharmacyList', 'setselectData']),
     cityList () {
       let res = TwCity.taiwan.map((tw) => tw.city)
       return res
@@ -70,11 +71,20 @@ export default {
       let area = this.area
       res = city + area
       return res
+    },
+    selectdPharmacy () {
+      let res
+      if (!this.setselectData.length) {
+        return
+      }
+      res = this.setselectData[0].properties.updated
+      return res ? `口罩庫存最後更新時間： ${res}` : ''
     }
   },
   watch: {
     area (newVal) {
       newVal ? this.getPharmacyList(this.filterPharmacy) : this.getPharmacyList('')
+      newVal ? this.getselectData([this.statePharmacyList[0]]) : this.getselectData()
     }
   },
   created () {
@@ -129,10 +139,22 @@ export default {
   background-color: #fff;
   padding: 20px;
   /* margin-right: -17px; */
-  height: calc(100% - 188px);
+  height: calc(100% - 203px);
   overflow-y: auto;
   @media (max-width: 1024px) {
     height: calc(100% - 136px);
   }
+}
+.last_time {
+  background-color: #0BA29C;
+  width: 100%;
+  height: 60px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 6;
+  color: #fff;
+  line-height: 60px;
+  padding-left: 20px;
 }
 </style>
