@@ -1,96 +1,33 @@
 <template>
-  <div class="vue-leaflet">
-    <div class="map">
-      <l-map
-        :zoom="zoom"
-        :center="center"
-        ref="myMap">
-        <l-tile-layer
-          :url="url"
-          :attribution="attribution">
-        </l-tile-layer>
+  <div class="map">
+    <l-map
+      :zoom="zoom"
+      :center="center"
+      ref="myMap">
+      <l-tile-layer
+        :url="url"
+        :attribution="attribution">
+      </l-tile-layer>
+      <l-marker
+        :lat-lng="marker"
+        :icon="icon"
+        ref='marker'>
+      </l-marker>
+      <v-marker-cluster ref="clusterRef">
         <l-marker
-          :lat-lng="marker"
-          :icon="icon"
-          ref='marker'>
+          v-for="stores in statePharmacyList"
+          :key="stores.id"
+          :lat-lng="getCoods(stores.geometry.coordinates[0], stores.geometry.coordinates[1])">
+          <l-popup :content="getPopup(stores.properties)"></l-popup>
         </l-marker>
-        <v-marker-cluster ref="clusterRef">
-          <l-marker
-            v-for="stores in filterPharmacy"
-            :key="stores.id"
-            :lat-lng="getCoods(stores.geometry.coordinates[0], stores.geometry.coordinates[1])">
-            <l-popup :content="getPopup(stores.properties)"></l-popup>
-          </l-marker>
-        </v-marker-cluster>
-      </l-map>
-    </div>
-    <!-- <div class="map-note">
-      <div class="select_container">
-        <select
-          class="select"
-          v-model="city"
-          @change="area = null">
-          <option :value="null">請選擇</option>
-          <option
-            v-for="item in cityList"
-            :value="item"
-            :key="item.id">
-            {{ item }}
-          </option>
-        </select>
-        <select
-          class="select"
-          v-model="area">
-          <option :value="null">請選擇</option>
-          <template v-if="!!city">
-            <option v-for="item in areaList"
-              :value="item"
-              :key="item.id">
-              {{item}}
-            </option>
-          </template>
-        </select>
-        <p>有取得口罩數量的藥局有 <span class="hi_light"> {{ areaMaskNum }} </span> 家</p>
-      </div>
-      <div class="list_container">
-        <div class="pharmacy_list"
-          v-if="filterPharmacy.length">
-          <div class="pharmacy"
-            v-for="pharmacy in filterPharmacy"
-            :key="pharmacy.properties.id"
-            @click="moveTo(pharmacy.geometry)">
-            <h2 class="name">{{ pharmacy.properties.name }}</h2>
-            <p class="address">
-              <span class="img">
-                <img src="@img/map-marker.png">
-              </span>
-               {{ pharmacy.properties.address }}</p>
-            <p class="tel">
-              <span class="img">
-                <img src="@img/phone.png">
-              </span>
-              {{ pharmacy.properties.phone }}</p>
-            <div class="status_container">
-              <span class="mask_status"
-              :class="pharmacy.properties.mask_adult === 0 ? 'selled':''">
-                成人 : {{ pharmacy.properties.mask_adult }} 個
-              </span>
-              <span class="mask_status"
-              :class="pharmacy.properties.mask_child === 0 ? 'selled':''">
-                兒童 : {{ pharmacy.properties.mask_child }} 個
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div> -->
+      </v-marker-cluster>
+    </l-map>
   </div>
 </template>
 
 <script>
 import Vue2LeafletMarkerCluster from 'vue2-leaflet-markercluster'
-
-import TwCity from '@/json/city_list'
+import { mapGetters } from 'vuex'
 
 import {
   LMap,
@@ -112,9 +49,6 @@ export default {
   },
   data () {
     return {
-      Tw_Stores: [],
-      city: null, // 城市
-      area: null, // 地區
       zoom: 5,
       center: L.latLng(24.163721, 120.63542),
       marker: L.latLng(24.163721, 120.63542),
@@ -139,14 +73,24 @@ export default {
     },
     getPopup (item) {
       let addr = item.address.includes('\n') ? item.address.split('\n')[0] : item.address
-
       return `
-        <h3 class="store-title">${item.name}</h3>
-        <div class="store-info">
-          <a target="_blank" href="https://www.google.com.tw/maps/place/${addr}">地址: ${addr}</a><br>
-          電話: ${item.phone}<br>
-          口罩數量: 成人口罩 : ${item.mask_adult} 個  兒童口罩 : ${item.mask_child} 個
-        </div>
+        <div class="pharmacy">
+          <div class="pharmacy_content">
+            <h2 class="name">${item.name}</h2>
+            <p class="tel">
+              ${item.phone}</p>
+            <a class="address" target="_blank" href="https://www.google.com.tw/maps/place/${addr}">
+              ${addr}</a>
+          </div>
+          <div class="status_container">
+            <span class="mask_status">
+              成人 : ${item.mask_adult} 個
+            </span>
+            <span class="mask_status">
+              兒童 : ${item.mask_child} 個
+            </span>
+          </div>
+      </div>
       `
     },
     renderMap () {
@@ -156,12 +100,6 @@ export default {
       //   .then(jsonData => {
       //     this.Tw_Stores = jsonData
       //   })
-
-      fetch('https://raw.githubusercontent.com/kiang/pharmacies/master/json/points.json?fbclid=IwAR2faivZHghmapjOcGiuSocqD09wboudZpWjQIfxwG9xCutufqr7Bw06yVk')
-        .then(res => res.json())
-        .then(jsonData => {
-          this.Tw_Stores = jsonData.features
-        })
     },
     initLoccl () {
       if (navigator.geolocation) {
@@ -184,54 +122,10 @@ export default {
       }
     },
     geo_success (position) {
-    },
-    moveTo (geometry) {
-      let [ x, y ] = geometry.coordinates
-      L.latLng(x, y)
-      this.zoom = 22
-      this.center = L.latLng(y, x)
-      // this.$refs.clusterRef.
     }
   },
   computed: {
-    cityList () {
-      let res = TwCity.taiwan.map((tw) => tw.city)
-      return res
-    },
-    areaList () {
-      let res = []
-      let city = !!this.city
-      if (city) {
-        res = TwCity.taiwan.filter((tw) => tw.city === this.city)[0].area.map(areas => areas.text)
-      }
-      return res
-    },
-    filterPharmacy () {
-      let res = []
-      let city = this.city
-      let area = this.area
-      let tw = /(台|臺)../
-      if (!!city && !!area) {
-        if (city !== null && city.match(tw)) {
-          city = city.split('台').join('')
-        }
-        let regExp = new RegExp(city + area, 'g')
-        res = this.Tw_Stores.filter((features) => {
-          return features.properties.address.match(regExp)
-        })
-      }
-      return res
-    },
-    areaMaskNum () {
-      let filterPharmacy = this.filterPharmacy
-      let res = 0
-      filterPharmacy.map((pharmacy) => {
-        if (pharmacy.properties.mask_child || pharmacy.properties.mask_adult) {
-          res++
-        }
-      })
-      return res
-    }
+    ...mapGetters(['statePharmacyList', 'setselectData'])
   },
   mounted () {
     this.renderMap()
@@ -244,23 +138,6 @@ export default {
 <style lang="scss" scoped>
 @import "~leaflet.markercluster/dist/MarkerCluster.css";
 @import "~leaflet.markercluster/dist/MarkerCluster.Default.css";
-
-.vue-leaflet {
-  display: block;
-  position: absolute;
-  width: 100%;
-  height: 100%;
-}
-.map-info {
-  display: block;
-  padding: .75em 1.75em;
-  background-color: #fff;
-  border: 1px solid #000;
-  position: absolute;
-  z-index: 10;
-  top: 0;
-  right: 0;
-}
 .map{
   display: block;
   position: absolute;
@@ -275,109 +152,6 @@ export default {
     left: 0;
   }
 }
-
-.map-note{
-  display: block;
-  position: absolute;
-  width: 25%;
-  height: 100%;
-  left: 0%;
-  z-index: 1;
-  max-width: 480px;
-   @media (max-width: 1024px) {
-    width: 100%;
-    height: 50%;
-    top: 50%;
-    left: 0;
-    max-width: unset;
-  }
-}
-.select_container{
-  padding: 32px 20px 0 20px;
-  .select{
-    width: 100%;
-    height: 48px;
-    border: 1px solid #D8D8D8;
-    margin-bottom: 8px;
-    padding: 0 16px;
-    &:last-of-type{
-      margin-bottom: 12px;
-    }
-    @media (max-width: 1024px) {
-    height: 24px;
-    }
-  }
-  > p {
-    height: 36px;
-    letter-spacing: 0;
-    color: #333333;
-    font-size: 16px;
-  }
-  .hi_light{
-    color: #668AFE;
-    font-size: 24px;
-  }
-}
-.list_container{
-  background-color: #F2F2F2;
-  padding: 20px;
-  /* margin-right: -17px; */
-  height: calc(100% - 188px);
-  overflow-y: auto;
-  @media (max-width: 1024px) {
-    height: calc(100% - 136px);
-  }
-  .pharmacy{
-    cursor: pointer;
-    background-color: #fff;
-    padding: 24px;
-    margin-bottom: 12px;
-    &:last-of-type{
-      margin-bottom: 0;
-    }
-    .name{
-      line-height: 27px;
-      font-size: 24px;
-      color: #333333;
-      margin-bottom: 8px;
-    }
-    .address,.tel{
-      line-height: 24px;
-      color: #666666;
-      .img {
-        width: 14px;
-        display: inline-block;
-        text-align: center;
-      }
-    }
-    .tel {
-      margin-bottom: 12px;
-    }
-    .status_container{
-      .mask_status {
-        width: calc(100% / 2 - 2px);
-        height: 44px;
-        text-align: center;
-        display: inline-block;
-        background-color: #668AFE;
-        font-weight: 200;
-        letter-spacing: 0;
-        color: #FFFFFF;
-        font-size: 20px;
-        line-height: 44px;
-        font-size: 16px;
-        &:last-of-type{
-          margin-left: 2px;
-        }
-        &.selled{
-          background-color: #E2E2E2;
-          color: #9C9C9C;
-        }
-      }
-    }
-  }
-}
-
 >>> .store-title {
   font-size: 1.3em;
   line-height: 1.7em;
