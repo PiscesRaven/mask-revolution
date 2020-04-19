@@ -8,14 +8,19 @@
       </div>
       <div class="list_container">
         <div class="pharmacy_list">
-          <Pharmacy />
+          <Pharmacy
+            v-for="pharmacy in statePharmacyList"
+            :key="pharmacy.properties.id"
+            :class="pharmacy.properties.id === selectdId ? 'select' : ''"
+            @click.native="selected(pharmacy)"
+            :pharmacyData="pharmacy"/>
         </div>
       </div>
     </div>
     <div class="vue-leaflet">
-      <!-- <div class="mask_panel">
+      <div class="mask_panel">
         <img src="@img/inventory.png" alt="">
-      </div> -->
+      </div>
       <vue-leaflet />
     </div>
     <div class="last_time">{{selectdPharmacy}}</div>
@@ -49,6 +54,9 @@ export default {
         .then(jsonData => {
           this.getstroeList(jsonData.features)
         })
+    },
+    selected (data) {
+      this.getselectData([data])
     }
   },
   computed: {
@@ -74,17 +82,20 @@ export default {
     },
     selectdPharmacy () {
       let res
-      if (!this.setselectData.length) {
+      if (this.setselectData) {
         return
       }
       res = this.setselectData[0].properties.updated
       return res ? `口罩庫存最後更新時間： ${res}` : ''
+    },
+    selectdId () {
+      return this.setselectData[0].properties.id
     }
   },
   watch: {
     area (newVal) {
       newVal ? this.getPharmacyList(this.filterPharmacy) : this.getPharmacyList('')
-      newVal ? this.getselectData([this.statePharmacyList[0]]) : this.getselectData()
+      newVal && this.statePharmacyList.length > 0 ? this.getselectData([this.statePharmacyList[0]]) : this.getselectData([])
     }
   },
   created () {
