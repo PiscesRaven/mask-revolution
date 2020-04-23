@@ -1,34 +1,31 @@
 <template>
-  <transition-group name="fade">
-    <div class="pharmacy"
-      v-for="pharmacy in statePharmacyList"
-      :key="pharmacy.properties.id"
-      :class="pharmacy.properties.id === selectdId ? 'select' : ''"
-      @click="selected(pharmacy)">
-      <div class="pharmacy_content">
-        <h2 class="name">{{ pharmacy.properties.name }}</h2>
-        <p class="tel">
-          {{ pharmacy.properties.phone }}</p>
-        <p class="address">
-          {{ pharmacy.properties.address }}</p>
-      </div>
-      <div class="status_container">
-        <span class="mask_status"
-        :class="maskAmount(pharmacy.properties.mask_adult)">
-          成人 : {{ pharmacy.properties.mask_adult }} 個
-        </span>
-        <span class="mask_status"
-        :class="maskAmount(pharmacy.properties.mask_child)">
-          兒童 : {{ pharmacy.properties.mask_child }} 個
-        </span>
-      </div>
+  <div class="pharmacy">
+    <div class="pharmacy_content">
+      <h2 class="name">{{ pharmacyData.properties.name }}</h2>
+      <p class="tel">
+       電話:  {{ pharmacyData.properties.phone }}</p>
+      <p class="address">
+       地址:  {{ pharmacyData.properties.address }}</p>
     </div>
-  </transition-group>
+    <div class="status_container">
+      <span class="mask_status"
+      :class="maskAmount(pharmacyData.properties.mask_adult)">
+        成人 : {{ pharmacyData.properties.mask_adult }} 個
+      </span>
+      <span class="mask_status"
+      :class="maskAmount(pharmacyData.properties.mask_child)">
+        兒童 : {{ pharmacyData.properties.mask_child }} 個
+      </span>
+    </div>
+  </div>
 </template>
 <script>
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
+  props: {
+    pharmacyData: Object
+  },
   methods: {
     ...mapActions(['getselectData']),
     maskAmount (item) {
@@ -43,16 +40,10 @@ export default {
         classList.push('selled')
       }
       return classList
-    },
-    selected (data) {
-      this.getselectData([data])
     }
   },
   computed: {
-    ...mapGetters(['statePharmacyList', 'setselectData']),
-    selectdId () {
-      return this.setselectData[0].properties.id
-    }
+    ...mapGetters(['setselectData'])
   }
 }
 </script>

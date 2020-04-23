@@ -6,7 +6,8 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     stroeList: [],
-    pharmacyList: []
+    pharmacyList: [],
+    selectData: []
   },
   mutations: {
     setstroeList (state, payload) {
@@ -28,6 +29,9 @@ export default new Vuex.Store({
         })
         state.pharmacyList = res
       }
+    },
+    setselectData (state, payload) {
+      state.selectData = payload
     }
   },
   actions: {
@@ -36,10 +40,14 @@ export default new Vuex.Store({
     },
     getPharmacyList ({ commit }, payload) {
       commit('setPharmacyList', payload)
+    },
+    getselectData ({ commit }, payload) {
+      commit('setselectData', payload)
     }
   },
   getters: {
-    statePharmacyList: state => state.pharmacyList
+    statePharmacyList: state => state.pharmacyList,
+    setselectData: state => state.selectData
   },
   modules: {
   }

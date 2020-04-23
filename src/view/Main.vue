@@ -8,7 +8,9 @@
       </div>
       <div class="list_container">
         <div class="pharmacy_list">
+          <div v-if="statePharmacyList.length === 0">暫無資料</div>
           <Pharmacy
+            v-else
             v-for="pharmacy in statePharmacyList"
             :key="pharmacy.properties.id"
             :class="pharmacy.properties.id === selectdId ? 'select' : ''"
@@ -52,7 +54,9 @@ export default {
       fetch('https://raw.githubusercontent.com/kiang/pharmacies/master/json/points.json?fbclid=IwAR2faivZHghmapjOcGiuSocqD09wboudZpWjQIfxwG9xCutufqr7Bw06yVk')
         .then(res => res.json())
         .then(jsonData => {
-          this.getstroeList(jsonData.features)
+          if (jsonData.features.length > 0) {
+            this.getstroeList(jsonData.features)
+          }
         })
     },
     selected (data) {
@@ -123,6 +127,8 @@ export default {
     left: 25%;
     z-index: 7;
     background-color: #fff;
+    display: flex;
+    align-items: center;
   }
 }
 .map-note{

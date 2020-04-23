@@ -10,8 +10,8 @@
       @click="select =!select"
       :selectData="option"
     >
-      <div class="select_box" v-if="propsList">
-        <div class="select_scroll">
+      <div class="select_box" >
+        <div class="select_scroll" v-if="propsList.length">
           <li
             v-for="item in liList"
             :key="item.id"
@@ -20,6 +20,9 @@
           >
             {{ item }}
           </li>
+        </div>
+        <div class="select_scroll" v-else>
+          <li>尚無資料</li>
         </div>
       </div>
     </ul>
