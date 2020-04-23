@@ -420,7 +420,7 @@ module.exports = {
         },
         {
           zip: '358',
-          text: '苑裡鎮'
+          text: '苑里鎮'
         },
         {
           zip: '360',
@@ -505,7 +505,7 @@ module.exports = {
         },
         {
           zip: '412',
-          text: '大裡區'
+          text: '大里區'
         },
         {
           zip: '413',
@@ -521,7 +521,7 @@ module.exports = {
         },
         {
           zip: '421',
-          text: '後裡區'
+          text: '后里區'
         },
         {
           zip: '422',
@@ -731,7 +731,7 @@ module.exports = {
         },
         {
           zip: '553',
-          text: '水裡鄉'
+          text: '水里鄉'
         },
         {
           zip: '555',
@@ -1291,7 +1291,7 @@ module.exports = {
         },
         {
           zip: '905',
-          text: '裡港鄉'
+          text: '里港鄉'
         },
         {
           zip: '906',
@@ -1456,7 +1456,7 @@ module.exports = {
         },
         {
           zip: '963',
-          text: '太麻裡'
+          text: '太麻里'
         },
         {
           zip: '964',
@@ -1517,7 +1517,7 @@ module.exports = {
         },
         {
           zip: '981',
-          text: '玉裡鎮'
+          text: '玉里鎮'
         },
         {
           zip: '982',
@@ -1525,7 +1525,7 @@ module.exports = {
         },
         {
           zip: '983',
-          text: '富裡鄉'
+          text: '富里鄉'
         }
       ]
     },
