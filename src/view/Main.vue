@@ -129,6 +129,11 @@ export default {
     background-color: #fff;
     display: flex;
     align-items: center;
+    @media (max-width: 1024px) {
+      left: 0%;
+      width: 100%;
+      justify-content: center;
+    }
   }
 }
 .map-note{
@@ -146,6 +151,12 @@ export default {
     left: 0;
     max-width: unset;
   }
+  @media (max-width: 769px) {
+    top: 100px;
+    height: calc(100% - 100px);
+    z-index: 6;
+    background-color: #fff;
+  }
 }
 .select_container{
   position: relative;
@@ -159,7 +170,7 @@ export default {
   height: calc(100% - 203px);
   overflow-y: auto;
   @media (max-width: 1024px) {
-    height: calc(100% - 136px);
+    height: calc(100% - 205px);
   }
 }
 .last_time {
