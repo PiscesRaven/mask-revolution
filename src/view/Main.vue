@@ -8,13 +8,13 @@
       </div>
       <div class="list_container">
         <div class="pharmacy_list">
-          <div v-if="statePharmacyList.length === 0">暫無資料</div>
+          <div v-if="statePharmacyList.length === 0">{{ text || searchText }}</div>
           <Pharmacy
             v-else
-            v-for="pharmacy in statePharmacyList"
+            v-for="(pharmacy, index) in statePharmacyList"
             :key="pharmacy.properties.id"
             :class="pharmacy.properties.id === selectdId ? 'select' : ''"
-            @click.native="selected(pharmacy)"
+            @click.native="selected(pharmacy, index)"
             :pharmacyData="pharmacy"/>
         </div>
       </div>
@@ -40,7 +40,8 @@ export default {
   data () {
     return {
       city: '', // 城市
-      area: '' // 地區
+      area: '', // 地區
+      text: ''
     }
   },
   components: {
@@ -56,11 +57,13 @@ export default {
         .then(jsonData => {
           if (jsonData.features.length > 0) {
             this.getstroeList(jsonData.features)
+          } else {
+            this.text = '無法取得商家資料'
           }
         })
     },
-    selected (data) {
-      this.getselectData([data])
+    selected (data, index) {
+      this.getselectData({ ...data, id: index })
     }
   },
   computed: {
@@ -89,17 +92,34 @@ export default {
       if (this.setselectData) {
         return
       }
-      res = this.setselectData[0].properties.updated
+      res = this.setselectData.properties.updated
       return res ? `口罩庫存最後更新時間： ${res}` : ''
     },
     selectdId () {
-      return this.setselectData[0].properties.id
+      return this.setselectData.properties.id
+    },
+    searchText () {
+      let res = ''
+      let city = this.city
+      let area = this.area
+      if (city === '' && area === '') {
+        res = '請選擇城市與地區'
+      }
+
+      if (city !== '' && area === '') {
+        res = '請選擇地區'
+      }
+
+      if ((city !== '' && area !== '') && this.statePharmacyList.length === 0) {
+        res = '該地區無店家'
+      }
+      return res
     }
   },
   watch: {
     area (newVal) {
       newVal ? this.getPharmacyList(this.filterPharmacy) : this.getPharmacyList('')
-      newVal && this.statePharmacyList.length > 0 ? this.getselectData([this.statePharmacyList[0]]) : this.getselectData([])
+      newVal && this.statePharmacyList.length > 0 ? this.getselectData({ ...this.statePharmacyList[0], id: 0 }) : this.getselectData({})
     }
   },
   created () {
