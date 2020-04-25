@@ -7,7 +7,7 @@ export default new Vuex.Store({
   state: {
     stroeList: [],
     pharmacyList: [],
-    selectData: []
+    selectData: {}
   },
   mutations: {
     setstroeList (state, payload) {

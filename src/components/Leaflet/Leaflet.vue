@@ -13,10 +13,9 @@
         :icon="icon"
         ref='marker'>
       </l-marker>
-      <v-marker-cluster ref="clusterRef">
+      <v-marker-cluster ref="clusterRef" v-if="statePharmacyList.length > 0">
         <l-marker
           ref="marker"
-          :class="selectData"
           v-for="stores in statePharmacyList"
           :key="stores.id"
           :icon="maskMarker(stores)"
@@ -24,8 +23,6 @@
           <l-popup ref="popup" width="320">
             <Pharmacy
               :key="stores.properties.id"
-              :class="stores.properties.id === selectdId ? 'select' : ''"
-              @click="selected(stores)"
               :pharmacyData="stores"/>
           </l-popup>
         </l-marker>
@@ -36,7 +33,7 @@
 
 <script>
 import Vue2LeafletMarkerCluster from 'vue2-leaflet-markercluster'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import Pharmacy from '../Pharmacy/Pharmacy'
 
 import {
@@ -67,16 +64,13 @@ export default {
         iconUrl: 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png',
         iconSize: [50, 50]
       }),
-      text: 'this is a marker',
       token: '',
       url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw',
       attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>'
     }
   },
   methods: {
-    selectdId () {
-      return this.setselectData[0].properties.id
-    },
+    ...mapActions(['getselectData']),
     maskMarker (store) {
       let assetsUrl = ''
       let adult = store.properties.mask_adult
@@ -122,26 +116,22 @@ export default {
       } else {
         alert('不好意思阿!!!你的瀏覽器不支援!定位功能喔!!')
       }
-    },
-    geo_success (position) {
     }
   },
   computed: {
     ...mapGetters(['statePharmacyList', 'setselectData']),
     selectData () {
-      return this.setselectData
+      return this.setselectData || {}
     }
   },
   watch: {
     selectData (newVal) {
-      if (newVal && newVal.length) {
-        let [ x, y ] = [...newVal[0].geometry.coordinates]
+      console.log(typeof newVal, newVal)
+      if (newVal && Object.keys(newVal).length !== 0) {
+        let [ x, y ] = [...newVal.geometry.coordinates]
         this.$refs.myMap.mapObject.setView(L.latLng(y, x), 20)
-        this.$refs.marker.forEach(mark => {
-          const [ markerLat, markerLong ] = mark.latLng
-          if (markerLat === y.toString() && markerLong === x.toString()) {
-            L.markerClusterGroup().zoomToShowLayer(mark, () => mark.mapObject.openPopup())
-          }
+        this.$nextTick(() => {
+          this.$refs.marker[newVal.id].mapObject.openPopup()
         })
       }
     }
